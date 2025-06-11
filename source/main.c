@@ -356,19 +356,22 @@ const char *word_list[MAX_WORDS] = {
     "WRATH", "WREAK", "WRECK", "WREST", "WRING", "WRIST", "WRITE", "WRITS", "WRONG",
     "WROTE", "WROTH", "YACHT", "YARDS", "YARNS", "YAWNS", "YEARN", "YEARS", "YEAST",
     "YELLS", "YELPS", "YIELD", "YOKED", "YOKES", "YOLKS", "YOUNG", "YOURS", "YOUTH",
-    "ZEBRA", "ZESTY", "ZONES"
-};
+    "ZEBRA", "ZESTY", "ZONES"};
 
 PrintConsole topScreen, bottomScreen;
 
 // Callback for software keyboard validation
-static SwkbdCallbackResult WordleCallback(void* user, const char** ppMessage, const char* text, size_t textlen) {
-    if (textlen != WORD_LENGTH) {
+static SwkbdCallbackResult WordleCallback(void *user, const char **ppMessage, const char *text, size_t textlen)
+{
+    if (textlen != WORD_LENGTH)
+    {
         *ppMessage = "Please enter exactly 5 letters.";
         return SWKBD_CALLBACK_CONTINUE;
     }
-    for (int i = 0; i < textlen; i++) {
-        if (text[i] < 'A' || text[i] > 'Z') {
+    for (int i = 0; i < textlen; i++)
+    {
+        if (text[i] < 'A' || text[i] > 'Z')
+        {
             *ppMessage = "Only uppercase letters A-Z are allowed.";
             return SWKBD_CALLBACK_CONTINUE;
         }
@@ -376,9 +379,12 @@ static SwkbdCallbackResult WordleCallback(void* user, const char** ppMessage, co
     return SWKBD_CALLBACK_OK;
 }
 
-bool isWordInList(const char *word) {
-    for (int i = 0; i < MAX_WORDS; i++) {
-        if (word_list[i] && strcmp(word_list[i], word) == 0) {
+bool isWordInList(const char *word)
+{
+    for (int i = 0; i < MAX_WORDS; i++)
+    {
+        if (word_list[i] && strcmp(word_list[i], word) == 0)
+        {
             return true;
         }
     }
@@ -386,49 +392,66 @@ bool isWordInList(const char *word) {
 }
 
 // Function to print the game board
-void printBoard(char guesses[MAX_GUESSES][WORD_LENGTH + 1], int current_guess, const char *target) {
+void printBoard(char guesses[MAX_GUESSES][WORD_LENGTH + 1], int current_guess, const char *target)
+{
     consoleSelect(&topScreen);
     consoleClear();
     printf("\x1b[2;2HWordle for 3DS\n\n");
 
-    for (int i = 0; i < MAX_GUESSES; i++) {
-        if (i < current_guess) {
+    for (int i = 0; i < MAX_GUESSES; i++)
+    {
+        if (i < current_guess)
+        {
             int target_counts[26] = {0};
-            for (int j = 0; j < WORD_LENGTH; j++) {
+            for (int j = 0; j < WORD_LENGTH; j++)
+            {
                 target_counts[target[j] - 'A']++;
             }
 
-            char colour[WORD_LENGTH] = {0}; // 0=gray, 1=green, 2=yellow
+            char color[WORD_LENGTH] = {0}; // 0=gray, 1=green, 2=yellow
 
             // First pass: mark greens
-            for (int j = 0; j < WORD_LENGTH; j++) {
-                if (guesses[i][j] == target[j]) {
-                    colour[j] = 1; // green
+            for (int j = 0; j < WORD_LENGTH; j++)
+            {
+                if (guesses[i][j] == target[j])
+                {
+                    color[j] = 1; // green
                     target_counts[guesses[i][j] - 'A']--;
                 }
             }
 
             // Second pass: mark yellows
-            for (int j = 0; j < WORD_LENGTH; j++) {
-                if (colour[j] == 0 && target_counts[guesses[i][j] - 'A'] > 0) {
-                    colour[j] = 2; // yellow
+            for (int j = 0; j < WORD_LENGTH; j++)
+            {
+                if (color[j] == 0 && target_counts[guesses[i][j] - 'A'] > 0)
+                {
+                    color[j] = 2; // yellow
                     target_counts[guesses[i][j] - 'A']--;
                 }
             }
 
-            // Print with colours
-            for (int j = 0; j < WORD_LENGTH; j++) {
-                if (colour[j] == 1) {
+            // Print with colors
+            for (int j = 0; j < WORD_LENGTH; j++)
+            {
+                if (color[j] == 1)
+                {
                     printf("\x1b[32m%c\x1b[0m ", guesses[i][j]);
-                } else if (colour[j] == 2) {
+                }
+                else if (color[j] == 2)
+                {
                     printf("\x1b[33m%c\x1b[0m ", guesses[i][j]);
-                } else {
+                }
+                else
+                {
                     printf("\x1b[90m%c\x1b[0m ", guesses[i][j]);
                 }
             }
             printf("\n");
-        } else {
-            for (int j = 0; j < WORD_LENGTH; j++) {
+        }
+        else
+        {
+            for (int j = 0; j < WORD_LENGTH; j++)
+            {
                 printf("_ ");
             }
             printf("\n");
@@ -436,14 +459,18 @@ void printBoard(char guesses[MAX_GUESSES][WORD_LENGTH + 1], int current_guess, c
     }
 }
 
-void printUsedLetters(char guesses[MAX_GUESSES][WORD_LENGTH + 1], int current_guess, const char *target) {
-    bool incorrect[ALPHABET_LEN] = { false };
+void printUsedLetters(char guesses[MAX_GUESSES][WORD_LENGTH + 1], int current_guess, const char *target)
+{
+    bool incorrect[ALPHABET_LEN] = {false};
 
     // Mark incorrect letters
-    for (int i = 0; i < current_guess; i++) {
-        for (int j = 0; j < WORD_LENGTH; j++) {
+    for (int i = 0; i < current_guess; i++)
+    {
+        for (int j = 0; j < WORD_LENGTH; j++)
+        {
             char ch = guesses[i][j];
-            if (!strchr(target, ch)) {
+            if (!strchr(target, ch))
+            {
                 incorrect[ch - 'A'] = true;
             }
         }
@@ -451,45 +478,57 @@ void printUsedLetters(char guesses[MAX_GUESSES][WORD_LENGTH + 1], int current_gu
 
     printf("\nUsed Letters:\n");
 
-    for (char ch = 'A'; ch <= 'Z'; ch++) {
-        if (incorrect[ch - 'A']) {
-            printf("\x1b[30m%c\x1b[0m ", ch);  // Black text for incorrect letters
-        } else {
-            printf("%c ", ch);                // Normal for unguessed or correct
+    for (char ch = 'A'; ch <= 'Z'; ch++)
+    {
+        if (incorrect[ch - 'A'])
+        {
+            printf("\x1b[30m%c\x1b[0m ", ch); // Black text for incorrect letters
         }
-        if ((ch - 'A' + 1) % 13 == 0) printf("\n");  // Split into two rows
+        else
+        {
+            printf("%c ", ch); // Normal for unguessed or correct
+        }
+        if ((ch - 'A' + 1) % 13 == 0)
+            printf("\n"); // Split into two rows
     }
 
     printf("\n");
 }
 
 // Function to print instructions
-void printInstructions(char *current_input, int current_guess, bool game_won, const char *target_word) {
+void printInstructions(char *current_input, int current_guess, bool game_won, const char *target_word)
+{
     consoleSelect(&bottomScreen);
     consoleClear();
     printf("\x1b[2;2HInstructions:\n");
     printf("Press A to enter a 5-letter word.\n");
     printf("Press START to restart.\n");
     printf("\nCurrent input: %s\n", current_input);
-    if (game_won) {
+    if (game_won)
+    {
         printf("\nYou won! Word was %s\n", target_word);
-    } else if (current_guess >= MAX_GUESSES) {
+    }
+    else if (current_guess >= MAX_GUESSES)
+    {
         printf("\nGame over! Word was %s\n", target_word);
     }
 }
 
 // Function to select a random word
-const char *getRandomWord() {
+const char *getRandomWord()
+{
     return word_list[rand() % MAX_WORDS];
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     gfxInitDefault();
     consoleInit(GFX_TOP, &topScreen);
     consoleInit(GFX_BOTTOM, &bottomScreen);
     srand(time(NULL));
 
-    while (aptMainLoop()) {
+    while (aptMainLoop())
+    {
         // Game state
         char guesses[MAX_GUESSES][WORD_LENGTH + 1] = {0};
         char current_input[WORD_LENGTH + 1] = "";
@@ -502,16 +541,23 @@ int main(int argc, char **argv) {
 
         bool restart_requested = false;
 
-        // === Inner game loop ===
-        while (aptMainLoop()) {
+        bool needRedraw = true; // flag for when to redraw screens
+
+        while (aptMainLoop())
+        {
             hidScanInput();
             u32 kDown = hidKeysDown();
 
-            printBoard(guesses, current_guess, target_word);
-            printUsedLetters(guesses, current_guess, target_word);
-            printInstructions(current_input, current_guess, game_won, target_word);
+            if (kDown || needRedraw)
+            {
+                printBoard(guesses, current_guess, target_word);
+                printUsedLetters(guesses, current_guess, target_word);
+                printInstructions(current_input, current_guess, game_won, target_word);
+                needRedraw = false; // reset flag
+            }
 
-            if (kDown & KEY_A && current_guess < MAX_GUESSES && !game_won) {
+            if (kDown & KEY_A && current_guess < MAX_GUESSES && !game_won)
+            {
                 swkbdInit(&swkbd, SWKBD_TYPE_WESTERN, 1, WORD_LENGTH);
                 swkbdSetValidation(&swkbd, SWKBD_NOTEMPTY_NOTBLANK, SWKBD_FILTER_DIGITS, WORD_LENGTH);
                 swkbdSetHintText(&swkbd, "Enter a 5-letter word (A-Z)");
@@ -519,39 +565,51 @@ int main(int argc, char **argv) {
                 swkbdSetFeatures(&swkbd, SWKBD_DARKEN_TOP_SCREEN);
 
                 SwkbdButton button = swkbdInputText(&swkbd, input_buffer, sizeof(input_buffer));
-                if (button == SWKBD_BUTTON_CONFIRM) {
-                    if (isWordInList(input_buffer)) {
+                if (button == SWKBD_BUTTON_CONFIRM)
+                {
+                    if (isWordInList(input_buffer))
+                    {
                         strcpy(current_input, input_buffer);
                         strcpy(guesses[current_guess], current_input);
                         current_guess++;
 
-                        if (strcmp(current_input, target_word) == 0) {
+                        if (strcmp(current_input, target_word) == 0)
+                        {
                             game_won = true;
                         }
 
                         current_input[0] = '\0';
-                    } else {
+                    }
+                    else
+                    {
                         consoleSelect(&bottomScreen);
                         printf("\n\x1b[31m'%s' is not in the word list.\x1b[0m\n", input_buffer);
                     }
+                    needRedraw = true; // redraw after input
                 }
             }
 
-            if (kDown & KEY_START) {
-                // Restart the game
+            if (kDown & KEY_START)
+            {
                 restart_requested = true;
                 break;
             }
 
-            if (current_guess >= MAX_GUESSES || game_won) {
-                printBoard(guesses, current_guess, target_word);
-                printUsedLetters(guesses, current_guess, target_word);
-                printInstructions(current_input, current_guess, game_won, target_word);
-                printf("\x1b[12;2HGame ended. Press START to play again.\n");
+            if (current_guess >= MAX_GUESSES || game_won)
+            {
+                if (needRedraw)
+                {
+                    printBoard(guesses, current_guess, target_word);
+                    printUsedLetters(guesses, current_guess, target_word);
+                    printInstructions(current_input, current_guess, game_won, target_word);
+                    printf("\x1b[12;2HGame ended. Press START to play again.\n");
+                }
 
-                while (aptMainLoop()) {
+                while (aptMainLoop())
+                {
                     hidScanInput();
-                    if (hidKeysDown() & KEY_START) {
+                    if (hidKeysDown() & KEY_START)
+                    {
                         restart_requested = true;
                         break;
                     }
@@ -567,7 +625,8 @@ int main(int argc, char **argv) {
             gspWaitForVBlank();
         }
 
-        if (!restart_requested) break; // Exit outer loop if not restarting
+        if (!restart_requested)
+            break; // Exit outer loop if not restarting
     }
 
     gfxExit();
