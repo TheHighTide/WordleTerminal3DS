@@ -398,29 +398,29 @@ void printBoard(char guesses[MAX_GUESSES][WORD_LENGTH + 1], int current_guess, c
                 target_counts[target[j] - 'A']++;
             }
 
-            char color[WORD_LENGTH] = {0}; // 0=gray, 1=green, 2=yellow
+            char colour[WORD_LENGTH] = {0}; // 0=gray, 1=green, 2=yellow
 
             // First pass: mark greens
             for (int j = 0; j < WORD_LENGTH; j++) {
                 if (guesses[i][j] == target[j]) {
-                    color[j] = 1; // green
+                    colour[j] = 1; // green
                     target_counts[guesses[i][j] - 'A']--;
                 }
             }
 
             // Second pass: mark yellows
             for (int j = 0; j < WORD_LENGTH; j++) {
-                if (color[j] == 0 && target_counts[guesses[i][j] - 'A'] > 0) {
-                    color[j] = 2; // yellow
+                if (colour[j] == 0 && target_counts[guesses[i][j] - 'A'] > 0) {
+                    colour[j] = 2; // yellow
                     target_counts[guesses[i][j] - 'A']--;
                 }
             }
 
-            // Print with colors
+            // Print with colours
             for (int j = 0; j < WORD_LENGTH; j++) {
-                if (color[j] == 1) {
+                if (colour[j] == 1) {
                     printf("\x1b[32m%c\x1b[0m ", guesses[i][j]);
-                } else if (color[j] == 2) {
+                } else if (colour[j] == 2) {
                     printf("\x1b[33m%c\x1b[0m ", guesses[i][j]);
                 } else {
                     printf("\x1b[90m%c\x1b[0m ", guesses[i][j]);
