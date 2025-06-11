@@ -376,6 +376,15 @@ static SwkbdCallbackResult WordleCallback(void* user, const char** ppMessage, co
     return SWKBD_CALLBACK_OK;
 }
 
+bool isWordInList(const char *word) {
+    for (int i = 0; i < MAX_WORDS; i++) {
+        if (word_list[i] && strcmp(word_list[i], word) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Function to print the game board
 void printBoard(char guesses[MAX_GUESSES][WORD_LENGTH + 1], int current_guess, const char *target) {
     consoleSelect(&topScreen);
@@ -511,15 +520,20 @@ int main(int argc, char **argv) {
 
                 SwkbdButton button = swkbdInputText(&swkbd, input_buffer, sizeof(input_buffer));
                 if (button == SWKBD_BUTTON_CONFIRM) {
-                    strcpy(current_input, input_buffer);
-                    strcpy(guesses[current_guess], current_input);
-                    current_guess++;
+                    if (isWordInList(input_buffer)) {
+                        strcpy(current_input, input_buffer);
+                        strcpy(guesses[current_guess], current_input);
+                        current_guess++;
 
-                    if (strcmp(current_input, target_word) == 0) {
-                        game_won = true;
+                        if (strcmp(current_input, target_word) == 0) {
+                            game_won = true;
+                        }
+
+                        current_input[0] = '\0';
+                    } else {
+                        consoleSelect(&bottomScreen);
+                        printf("\n\x1b[31m'%s' is not in the word list.\x1b[0m\n", input_buffer);
                     }
-
-                    current_input[0] = '\0';
                 }
             }
 
